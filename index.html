@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<title>🖨️ Shaper Tape printer for DYMO LabelWriter</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+</head>
+
+<body class="py-4">
+
+	<div class="container">
+
+		<h1>Shaper Tape printer for DYMO LabelWriter</h1>
+		<p class="lead">Use your DYMO LaberWriter to print the fiducials used by the Shaper Origin to track its position in space.</p>
+
+		<div class="card mb-3">
+			<div class="card-header">Demo</div>
+			<iframe src="https://www.youtube.com/embed/kYPWFxA9O6c?modestbranding=1&controls=0&rel=0" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+		</div>
+
+		<div class="card mb-3">
+			<div class="card-header">Print Job Configuration</div>
+			<div class="card-body">
+				<div class="alert alert-danger" role="alert" style="display: none;" id="alertService">The <a href="https://www.dymo.com/support?cfid=user-guide" class="alert-link">DYMO Connect Software</a> <i class="bi bi-box-arrow-up-right"></i> was not detected on this device! Make sure you have installed it, and that it is running. When ready, reload this page.</div>
+				<div class="alert alert-warning" role="alert" style="display: none;" id="alertPrinters">No connected printer was found. Check your setup and when ready, reload this page.</div>
+				<div class="mb-3 row">
+					<label for="printerList" class="col-sm-2 col-form-label">Printer</label>
+					<div class="col-sm-10">
+						<select class="form-select" id="printerList">
+						</select>
+					</div>
+				</div>
+				<div class="mb-3 row">
+					<label for="labelList" class="col-sm-2 col-form-label">Label type</label>
+					<div class="col-sm-10">
+						<select class="form-select" id="labelList">
+							<option selected value="11355">DYMO 11355 Multi Purpose 19x51mm</option>
+						</select>
+					</div>
+				</div>
+				<div class="mb-3 row">
+					<label for="dominoQuantity" class="col-sm-2 col-form-label">Quantity</label>
+					<div class=" col-sm-10">
+						<div class="input-group">
+							<input type="text" class="form-control" value="1" id="dominoQuantity">
+							<span class="input-group-text">domino(s)</span>
+						</div>
+					</div>
+				</div>
+				<p>
+					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="510" height="150" viewBox="0 0 1.7 0.5" id="sticker" style="display: none;">
+					</svg>
+				</p>
+				<button class="btn btn-success float-end" type="button" id="buttonPrintStart">
+					<i class="bi bi-printer"></i> Print
+				</button>
+			</div>
+		</div>
+
+		<div class="card mb-3">
+			<div class="card-header">About</div>
+			<div class="card-body">The code source and more information is available at <a href="https://github.com/nschurando/Shaper-Tape-printer-for-DYMO-LabelWriter">GitHub</a>. This project is in no way affiliated with Shaper Tools or DYMO, and comes with no guarantee of quality, so use at your own risk.</div>
+		</div>
+
+	</div>
+
+	<!--<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>-->
+	<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>-->
+	<!--<script src="https://s3.amazonaws.com/download.dymo.com/dymo/Software/JavaScript/dymo.connect.framework.min.js" type="text/javascript"></script>-->
+	<script src="js/jquery-3.6.0.min.js" type="text/javascript"></script>
+	<script src="js/bootstrap.bundle.min.js" type="text/javascript"></script>
+	<script src="js/dymo.connect.framework.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+
+		var shaper_domino_valid = [33279, 33727, 33759, 33775, 33783, 33787, 33789, 34239, 34271, 34287, 34295, 34299, 34301, 34719, 34735, 34743, 34747, 34749, 34767, 34775, 34779, 34781, 34791, 34795, 34797, 34803, 34805, 34809, 35263, 35295, 35311, 35319, 35323, 35325, 35743, 35759, 35767, 35771, 35773, 35791, 35799, 35803, 35805, 35815, 35819, 35821, 35827, 35829, 35833, 36255, 36271, 36279, 36283, 36285, 36303, 36311, 36315, 36317, 36327, 36331, 36333, 36339, 36341, 36345, 36751, 36759, 36763, 36765, 36775, 36779, 36781, 36787, 36789, 36793, 36807, 36811, 36813, 36819, 36821, 36825, 36835, 36837, 36841, 37311, 37343, 37359, 37367, 37371, 37373, 37791, 37807, 37815, 37819, 37821, 37839, 37847, 37851, 37853, 37863, 37867, 37869, 37875, 37877, 37881, 38303, 38319, 38327, 38331, 38333, 38351, 38359, 38363, 38365, 38375, 38379, 38381, 38387, 38389, 38393, 38799, 38807, 38811, 38813, 38823, 38827, 38829, 38835, 38837, 38841, 38855, 38859, 38861, 38867, 38869, 38873, 38883, 38885, 39327, 39343, 39351, 39355, 39357, 39375, 39383, 39387, 39389, 39399, 39403, 39405, 39411, 39413, 39417, 39823, 39831, 39835, 39837, 39847, 39851, 39853, 39859, 39861, 39865, 39879, 39883, 39885, 39891, 39893, 39907, 39909, 40335, 40343, 40347, 40349, 40359, 40363, 40365, 40371, 40373, 40391, 40395, 40397, 40403, 40405, 40419, 40421, 40839, 40843, 40845, 40851, 40853, 40867, 40869, 40899, 40901, 41407, 41439, 41455, 41463, 41467, 41469, 41887, 41903, 41911, 41915, 41917, 41935, 41943, 41947, 41949, 41959, 41963, 41965, 41971, 41973, 42399, 42415, 42423, 42427, 42429, 42447, 42455, 42459, 42461, 42471, 42475, 42477, 42483, 42485, 42895, 42903, 42907, 42909, 42919, 42923, 42925, 42931, 42933, 42951, 42955, 42957, 42963, 42965, 42979, 43423, 43439, 43447, 43451, 43453, 43471, 43479, 43483, 43485, 43495, 43499, 43501, 43507, 43509, 43919, 43927, 43931, 43933, 43943, 43947, 43949, 43955, 43957, 43975, 43979, 43981, 43987, 44003, 44431, 44439, 44443, 44445, 44455, 44459, 44461, 44467, 44487, 44491, 44493, 44499, 44515, 44935, 44939, 44941, 44947, 44963, 44995, 45471, 45487, 45495, 45499, 45501, 45519, 45527, 45531, 45533, 45543, 45547, 45549, 45555, 45967, 45975, 45979, 45981, 45991, 45995, 45997, 46003, 46023, 46027, 46035, 46051, 46479, 46487, 46491, 46493, 46503, 46507, 46515, 46535, 46539, 46547, 46563, 46983, 46987, 46995, 47011, 47043, 47503, 47511, 47515, 47527, 47531, 47539, 47559, 47563, 47571, 47587, 48007, 48011, 48019, 48035, 48067, 48519, 48523, 48531, 48547, 48579, 49027, 49599, 49631, 49647, 49655, 49659, 50079, 50095, 50103, 50107, 50127, 50135, 50139, 50151, 50155, 50163, 50591, 50607, 50615, 50619, 50639, 50647, 50651, 50663, 50667, 50675, 51087, 51095, 51099, 51111, 51115, 51123, 51143, 51147, 51155, 51615, 51631, 51639, 51643, 51663, 51671, 51675, 51687, 51691, 51699, 52111, 52119, 52123, 52135, 52139, 52147, 52167, 52171, 52623, 52631, 52635, 52647, 52651, 52679, 52683, 53127, 53131, 53663, 53679, 53687, 53691, 53711, 53719, 53723, 53735, 53739, 54159, 54167, 54171, 54183, 54187, 54215, 54671, 54679, 54683, 54695, 54727, 55175, 55695, 55703, 55719, 55751, 56199, 56711, 57759, 57775, 57783, 57807, 57815, 57831, 58255, 58263, 58279, 58767, 58775, 59791];
+		var shaper_domino_print_count = 0;
+
+		/**
+		 * A domino can be seen as a 16-bit number. We're going to arbitrarily make a few assumptions:
+		 * 1) A white dot is a one, and a black absence of dot is a zero.
+		 * 2) The upper line represents the most significant byte, the lower line the least significant one.
+		 * 3) In a line, the most significant bits are the dots on the left.
+		 * 
+		 * Now, because these are used by computer vision for tracking, some rules apply:
+		 * 1) The 4 corners must exhibit a white dot.
+		 * 2) Of the remaining 12 bits, there should be exactly 6 white dots and 6 black absence of dots.
+		 * 3) No 180° rotation of the domino could lead to an ambiguity.
+		 * 
+		 * With that in mind, all that is left to do in order to gerenarate the dominos is to iterate over all the possible values,
+		 * and exclude the ones that don't match the criterias listed above. I'm aware that this algorithm could be quite easiliy
+		 * made more efficient, but I find it easier to read and understand this way.
+		 *
+		 * @see https://github.com/berncodes/pyDominoPDF/blob/f9c109ab73fef2f56cd4313cd843d263ef755ffd/pyDominoValueGenerator.py
+		 * @see https://github.com/wraybowling/shaper-taper/blob/b7f40d420621e6149224c455140ddf2818322a33/shaper-taper.js
+		 */
+		function shaper_domino_generate_all() {
+
+			/**
+			 * Returns the number of 1 in the binary representation of a given number.
+			 */
+			function util_ones(num) {
+				return num.toString(2).split("1").length - 1;
+			}
+
+			/**
+			 * Returns the number with the bits reversed of the given one.
+			 * @see https://www.w3resource.com/javascript-exercises/javascript-basic-exercise-138.php
+			 */
+			function util_16bits_reverse(num) {
+				let result = 0;
+				for (let i = 0; i < 16; i++) {
+					result = result * 2 + (num % 2);
+					num = Math.floor(num / 2);
+				}
+				return result;
+			}
+
+			/* Iterate over all of 16-bits numbers to build a list of valid dominos */
+			for (var i = 0; i <= 0xFFFF; i++) {
+
+				/* Exclude candidates that don't have their corners white */
+				if ((i & 0x8181) != (0x8181)) {
+					continue;
+				}
+
+				/* Exclude candidates that don't have 10 white dots */
+				var ones = util_ones(i);
+				if (ones != 10) {
+					continue;
+				}
+
+				/* Exclude candidates that read the same value when rotated */
+				if (util_16bits_reverse(i) == i) {
+					continue;
+				}
+
+				/* Exclude candidates that when rotated read as an other candidate */
+				if (shaper_domino_valid.includes(util_16bits_reverse(i))) {
+					continue;
+
+				}
+
+				/* Add candidate to the array if it doesn't contain it yet */
+				if (shaper_domino_valid.indexOf(i) === -1) {
+					shaper_domino_valid.push(i);
+				}
+			}
+		}
+
+		/**
+		 * 
+		 */
+						async function shaper_domino_print(quantity) {
+
+			/**
+			 * Shuffles a given array.
+			 * @see https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+			 */
+			function util_array_shuffle(array) {
+				for (let i = array.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[array[i], array[j]] = [array[j], array[i]];
+				}
+			}
+
+			/* Print dominos one by one
+			 * @note This could be improved by allowing the user to abort printing */
+			for (var i = 0; i < quantity; i++) {
+
+				/* If it's the first domino, or if we've already printed a full set,
+				 * shuffle the list to create a new unique sequence */
+				if (shaper_domino_print_count == 0) {
+					console.log("Shuffling dominos");
+					util_array_shuffle(shaper_domino_valid);
+				}
+
+				/* Print the domino */
+				console.log("Printing domino (index " + shaper_domino_print_count + ", value " + shaper_domino_valid[shaper_domino_print_count] + ")");
+
+				/* Generate svg */
+				$('svg#sticker').empty();
+				var shape = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+				$(shape).attr({ x: 0, y: 0, rx: 0.1, ry: 0.1, width: 1.7, height: 0.5, fill: 'black' });
+				$('svg#sticker').append(shape);
+				for (var j = 0; j < 16; j++) {
+					var col = j % 8;
+					var lin = Math.floor(j / 8);
+					if (shaper_domino_valid[shaper_domino_print_count] & (1 << (15 - j))) {
+						shape = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+						$(shape).attr({ cx: 0.15 + 0.2 * col, cy: 0.15 + lin * 0.2, r: 0.05, fill: 'white' });
+						$('svg#sticker').append(shape);
+					}
+				}
+
+				/* Convert svg to png */
+				var svg = document.querySelector("svg");
+				var svgData = new XMLSerializer().serializeToString(svg);
+				var canvas = document.createElement("canvas");
+				canvas.width = 510;
+				canvas.height = 150;
+				var ctx = canvas.getContext("2d");
+				var img = document.createElement("img")
+				img.setAttribute("src", "data:image/svg+xml;base64," + btoa(svgData));
+				img.width = 510;
+				img.height = 150;
+
+				/* Dirty hack to await for the img.onload event */
+				function wait_img_load(src) {
+					return new Promise((resolve, reject) => {
+						src.onload = () => resolve(src)
+					})
+				}
+				await wait_img_load(img);
+
+				/* Convert png to base64 */
+				ctx.drawImage(img, 0, 0);
+				var imagebase64 = canvas.toDataURL("image/png").substr('data:image/png;base64,'.length);
+				console.log(canvas.toDataURL("image/png"));
+
+				/* Load 11355 label */
+				var label = dymo.label.framework.openLabelXml('<?xml version="1.0" encoding="utf-8"?><DieCutLabel Version="8.0" Units="twips"><PaperOrientation>Landscape</PaperOrientation><Id>MultiPurpose11355</Id><IsOutlined>false</IsOutlined><PaperName>11355 Multi-Purpose</PaperName><DrawCommands><RoundRectangle X="0" Y="0" Width="1080" Height="2880" Rx="180" Ry="180" /></DrawCommands><ObjectInfo><ImageObject><Name>Image</Name><ForeColor Alpha="255" Red="0" Green="0" Blue="0" /><BackColor Alpha="0" Red="255" Green="255" Blue="255" /><LinkedObjectName /><Rotation>Rotation0</Rotation><IsMirrored>False</IsMirrored><IsVariable>False</IsVariable><GroupID>-1</GroupID><IsOutlined>False</IsOutlined><Image></Image><ScaleMode>Fill</ScaleMode><BorderWidth>0</BorderWidth><BorderColor Alpha="255" Red="0" Green="0" Blue="0" /><HorizontalAlignment>Center</HorizontalAlignment><VerticalAlignment>Center</VerticalAlignment></ImageObject><Bounds X="326" Y="180" Width="2448" Height="720" /></ObjectInfo></DieCutLabel>');
+				label.setObjectText('Image', imagebase64);
+				label.print($('select#printerList').val());
+
+				/* Increment index and restart at zero  if we've already printed a full set */
+				shaper_domino_print_count = (shaper_domino_print_count + 1) % shaper_domino_valid.length;
+			}
+		}
+
+		/**
+		 * 
+		 */
+		function dymo_setup() {
+			dymo.label.framework.init();
+			var dymo_env = dymo.label.framework.checkEnvironment();
+			if (dymo_env.isFrameworkInstalled != true || dymo_env.isWebServicePresent != true) {
+				$('#alertService').show();
+			} else {
+				$('select#printerList').empty();
+				var dymo_printers = dymo.label.framework.getPrinters();
+				var dymo_printers_connected = 0;
+				for (var i = 0; i < dymo_printers.length; i++) {
+					if (dymo_printers[i].isConnected) {
+						$('select#printerList').append('<option value="' + dymo_printers[i].name + '">' + dymo_printers[i].name + ' (Connected)</option>');
+						dymo_printers_connected++;
+					} else {
+						$('select#printerList').append('<option value="' + dymo_printers[i].name + '" disabled>' + dymo_printers[i].name + ' (Disconnected)</option>');
+					}
+				}
+				if (dymo_printers_connected <= 0) {
+					$('#alertPrinters').show();
+				}
+			}
+		}
+
+		/* On document loaded */
+		$(document).ready(function () {
+
+			/* Prepapre printer framework
+			 * @see https://developers.dymo.com/2016/08/08/dymo-label-web-service-faq/ */
+			if (dymo.label.framework.init) {
+				dymo.label.framework.init(dymo_setup);
+			} else {
+				dymo_setup();
+			}
+
+			/* Generate list of valid dominos
+			 * @note That's not needed as the list is now hardcoded */
+			//shaper_domino_generate_all();
+		});
+
+		/* On print button clicked */
+		$('#buttonPrintStart').on('click', function (event) {
+			event.preventDefault();
+			shaper_domino_print($('#dominoQuantity').val());
+		});
+
+	</script>
+</body>
+
+</html>
