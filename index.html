@@ -35,6 +35,16 @@
 					</div>
 				</div>
 				<div class="mb-3 row">
+					<label for="printerList" class="col-sm-2 col-form-label">Tray</label>
+					<div class="col-sm-10">
+						<select class="form-select" id="printerTray">
+							<option selected value="0">Unspecified (use with single tray printers)</option>
+							<option value="1">Left</option>
+							<option value="2">Right</option>
+						</select>
+					</div>
+				</div>
+				<div class="mb-3 row">
 					<label for="labelList" class="col-sm-2 col-form-label">Label type</label>
 					<div class="col-sm-10">
 						<select class="form-select" id="labelList">
@@ -154,7 +164,7 @@
 		/**
 		 * 
 		 */
-						async function shaper_domino_print(quantity) {
+		async function shaper_domino_print(quantity) {
 
 			/**
 			 * Shuffles a given array.
@@ -221,10 +231,28 @@
 				var imagebase64 = canvas.toDataURL("image/png").substr('data:image/png;base64,'.length);
 				console.log(canvas.toDataURL("image/png"));
 
-				/* Load 11355 label */
+				/* Load 11355 label, and fill the image */
 				var label = dymo.label.framework.openLabelXml('<?xml version="1.0" encoding="utf-8"?><DieCutLabel Version="8.0" Units="twips"><PaperOrientation>Landscape</PaperOrientation><Id>MultiPurpose11355</Id><IsOutlined>false</IsOutlined><PaperName>11355 Multi-Purpose</PaperName><DrawCommands><RoundRectangle X="0" Y="0" Width="1080" Height="2880" Rx="180" Ry="180" /></DrawCommands><ObjectInfo><ImageObject><Name>Image</Name><ForeColor Alpha="255" Red="0" Green="0" Blue="0" /><BackColor Alpha="0" Red="255" Green="255" Blue="255" /><LinkedObjectName /><Rotation>Rotation0</Rotation><IsMirrored>False</IsMirrored><IsVariable>False</IsVariable><GroupID>-1</GroupID><IsOutlined>False</IsOutlined><Image></Image><ScaleMode>Fill</ScaleMode><BorderWidth>0</BorderWidth><BorderColor Alpha="255" Red="0" Green="0" Blue="0" /><HorizontalAlignment>Center</HorizontalAlignment><VerticalAlignment>Center</VerticalAlignment></ImageObject><Bounds X="326" Y="180" Width="2448" Height="720" /></ObjectInfo></DieCutLabel>');
 				label.setObjectText('Image', imagebase64);
-				label.print($('select#printerList').val());
+
+				/* Print the label
+				 * @see https://stackoverflow.com/questions/54826734/cant-figure-out-how-to-pass-copies-to-dymo-label-framework-3-0-js-sdk */
+				switch ($('select#printerTray').val()) {
+					case 1: {
+						var params = dymo.label.framework.createLabelWriterPrintParamsXml({ twinTurboRoll: 'Left' });
+						label.print($('select#printerList').val(), params);
+						break;
+					}
+					case 2: {
+						var params = dymo.label.framework.createLabelWriterPrintParamsXml({ twinTurboRoll: 'Right' });
+						label.print($('select#printerList').val(), params);
+						break;
+					}
+					default: {
+						label.print($('select#printerList').val());
+						break;
+					}
+				}
 
 				/* Increment index and restart at zero  if we've already printed a full set */
 				shaper_domino_print_count = (shaper_domino_print_count + 1) % shaper_domino_valid.length;
