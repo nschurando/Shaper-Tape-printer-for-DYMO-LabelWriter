@@ -16,7 +16,7 @@
 
 ## How to use
 
-1. Install the [DYMO Label Software](https://s3.amazonaws.com/download.dymo.com/dymo/Software/Win/DLS8Setup8.7.4.exe). Make sure you click on the "..." option.
+1. Install the [DYMO Label Software](https://download.dymo.com/dymo/Software/Win/DLS8Setup8.7.4.exe). Make sure you click on the "..." option.
 2. Start DYMO.DLS.Printing.Host.exe if not already running.
 3. Visit the website https://nschurando.github.io/Shaper-Tape-printer-for-DYMO-LabelWriter/.
 
